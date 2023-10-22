@@ -21,11 +21,11 @@ type QueryframeBuilderParams = {
 
 class QueryframeBuilder {
   public ctx: QueryframeBuilderParams
-  public queryClient?: QueryClient
+  public queryClient: QueryClient
 
   constructor(public config: QueryframeBuilderParams) {
     this.ctx = config
-    this.queryClient = new QueryClient(config.queryClientConfig)
+    this.queryClient = new QueryClient(config.queryClientConfig || {})
   }
 
   public createQuery: CreateHandler = routeParams =>
