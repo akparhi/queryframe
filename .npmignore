@@ -1,0 +1,10 @@
+.DS_Store
+.vscode
+/node_modules
+/src
+.gitignore
+.prettierignore
+pnpm-lock.yaml
+
+tsconfig.json
+tsup.config.js
