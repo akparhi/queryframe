@@ -1,6 +1,6 @@
 {
   "name": "@inkheart/queryframe",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -24,7 +24,7 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && tsup",
-    "publish": "npm publish --access public",
+    "publish": "npm publish",
     "lint": "eslint .",
     "format": "prettier . --write \"**/*.{mjs,ts,md,json}\"",
     "typecheck": "tsc --noEmit"

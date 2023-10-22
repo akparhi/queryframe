@@ -7,4 +7,4 @@
 pnpm-lock.yaml
 
 tsconfig.json
-tsup.config.js
+tsup.config.ts
