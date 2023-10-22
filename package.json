@@ -1,6 +1,11 @@
 {
-  "name": "@ark/queryframe",
+  "name": "@inkheart/queryframe",
   "version": "0.0.1",
+  "private": false,
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
   "main": "./dist/index.ts",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
