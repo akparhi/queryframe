@@ -60,11 +60,16 @@ export const init = async () => {
       //     name: 'hu',
       //   },
       // })
-      const { data } = await queryframe.getExpenseCategories.useInfiniteQuery({
-        query: {
-          name: 'hu',
+      const { data } = await queryframe.getExpenseCategories.useQuery(
+        {
+          query: {
+            name: 'hu',
+          },
         },
-      })
+        {
+          select: data => data.data,
+        },
+      )
       // eslint-disable-next-line no-console
       console.log(data)
       // const {data} =api.update.useQuery({

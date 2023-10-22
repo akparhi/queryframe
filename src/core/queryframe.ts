@@ -2,8 +2,8 @@ import {
   useInfiniteQuery,
   useMutation,
   useQuery,
-  type InfiniteData,
   type QueryKey,
+  type UseInfiniteQueryOptions,
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
@@ -89,7 +89,7 @@ export class QueryframeHandler<
   private log = (
     message: string,
     data?: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
-  ) =>
+  ) => {
     // eslint-disable-next-line no-console
     console.info(
       `${this.ctx.method?.toUpperCase()}::${pathParams(
@@ -97,6 +97,7 @@ export class QueryframeHandler<
         data?.params,
       )}: ${message}`,
     )
+  }
 
   /**
    *
@@ -219,34 +220,22 @@ export class QueryframeHandler<
     this.ctx.queryClient?.invalidateQueries(this.getKey(input))
   }
 
-  public useQuery = <Select>(
+  public useQuery = <
+    TQueryFnData extends InferDataParser<Output> extends never
+      ? ReturnType<Refract>
+      : InferDataParser<Output>,
+    SelectFn extends (p: TQueryFnData) => SelectFnData,
+    SelectFnData = TQueryFnData,
+  >(
     input: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
-    {
-      select,
-      refetchInterval,
-      onSuccess,
-      onError,
-      ...rest
-    }: Pick<
-      UseQueryOptions<
-        Select extends unknown
-          ? InferDataParser<Output> extends never
-            ? ReturnType<Refract>
-            : InferDataParser<Output>
-          : Select,
-        QueryframeError
-      >,
+    option?: Pick<
+      UseQueryOptions<TQueryFnData, QueryframeError, ReturnType<SelectFn>>,
       'networkMode' | 'cacheTime' | 'onError' | 'enabled'
     > & {
-      select?: (
-        p: InferDataParser<Output> extends never
-          ? ReturnType<Refract>
-          : InferDataParser<Output>,
-      ) => Select
-      refetchInterval?: number | false | ((p?: Select) => number | false)
-      onSuccess?: (p?: Select) => void
-      onError?: (p?: Select) => void
-    } = {},
+      select?: (p: TQueryFnData) => SelectFnData
+      refetchInterval?: number | false | ((p?: SelectFnData) => number | false)
+      onSuccess?: (p?: SelectFnData) => void
+    },
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.QUERY)
       this.throwFormattedError(
@@ -258,32 +247,27 @@ export class QueryframeHandler<
         input,
       )
 
-    return useQuery(
+    return useQuery<TQueryFnData, QueryframeError, SelectFnData>(
       this.getKey(input),
       ({ queryKey }) =>
         this.handle(
           queryKey?.[1] as HandlerParams &
             Omit<Parameters<Refract>[0], 'output'>,
         ),
-      { ...rest, select, refetchInterval, onSuccess, onError },
+      option,
     )
   }
 
-  public useInfiniteQuery = (
+  public useInfiniteQuery = <
+    TQueryFnData extends InferDataParser<Output> extends never
+      ? ReturnType<Refract>
+      : InferDataParser<Output>,
+  >(
     input: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
-    {
-      ...rest
-    }: Pick<
-      UseQueryOptions<
-        InfiniteData<
-          InferDataParser<Output> extends never
-            ? ReturnType<Refract>
-            : InferDataParser<Output>
-        >,
-        QueryframeError
-      >,
+    options?: Pick<
+      UseInfiniteQueryOptions<TQueryFnData, QueryframeError>,
       'networkMode' | 'enabled' | 'cacheTime'
-    > = {},
+    >,
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.QUERY)
       this.throwFormattedError(
@@ -295,7 +279,7 @@ export class QueryframeHandler<
         input,
       )
 
-    return useInfiniteQuery(
+    return useInfiniteQuery<TQueryFnData, QueryframeError>(
       this.getKey(input),
       ({ queryKey, pageParam = 1 }: { queryKey: any; pageParam?: number }) =>
         this.handle({
@@ -305,9 +289,7 @@ export class QueryframeHandler<
             page: pageParam,
           },
         } as HandlerParams & Omit<Parameters<Refract>[0], 'output'>),
-      {
-        ...rest,
-      },
+      options,
     )
   }
 }
