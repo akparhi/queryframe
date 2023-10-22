@@ -24,6 +24,7 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && tsup",
+    "pub": "npm publish --access public",
     "lint": "eslint .",
     "format": "prettier . --write \"**/*.{mjs,ts,md,json}\"",
     "typecheck": "tsc --noEmit"
