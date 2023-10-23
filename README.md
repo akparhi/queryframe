@@ -11,10 +11,83 @@
 
 Queryframe is a typesafe API SDK generator for REST endpoints and exposes hooks from the amazing @tanstack/react-query.
 
+## Tech
+
+Queryframe uses a number of open source projects under the hood:
+
+- [ReactQuery] - React Query v5
+- [Zod] - Zod
+- [Zocker] - zocker, 2kb library to generate mock data
+- [Redaxios] - redaxios, minimal fetch wrapper with axios interface
+
+## Installation
+
+Queryframe requires [Node.js](https://nodejs.org/) v18+ to run.
+
+Install the dependencies and devDependencies and start the server.
+
+```sh
+cd dillinger
+npm i
+node app
+```
+
+## Example Usage
+
+```typescript
+import { createQueryframeBuilder, z } from '@inkheart/queryframe'
+
+const builder = createQueryframeBuilder({
+  baseURL: 'https://api.sampleapis.com',
+})
+
+const getAvatars = builder.createQuery({
+  endpoint: '/avatar/info',
+  output: z
+    .object({
+      synopsis: z.string(),
+    })
+    .array(),
+})
+
+const { queryframe } = builder.createQueryframe({
+  getAvatars,
+})
+
+export default queryframe
+export const queryClient = builder.queryClient
+export { QueryClientProvider } from '@inkheart/queryframe'
+```
+
+#### useQuery interface
+
+```typescript
+import queryframe from '...'
+
+const { data } = await queryframe.getExpenseCategories.useQuery(
+  {},
+  {
+    refetchInterval: data => 1000,
+  },
+)
+```
+
+#### Handle interface
+
+```typescript
+import queryframe from '...'
+
+try {
+  const result = await queryframe.getExpenseCategories.handle({})
+} catch (error) {
+  console.error(error)
+}
+```
+
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[npm-shield]: https://img.shields.io/npm/v/@inkheart/queryframe?style=for-the-badge
+[npm-shield]: https://img.shields.io/npm/v/queryframe?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@inkheart/queryframe
 [contributors-shield]: https://img.shields.io/github/contributors/akparhi/queryframe.svg?style=for-the-badge
 [contributors-url]: https://github.com/akparhi/queryframe/graphs/contributors
@@ -26,3 +99,7 @@ Queryframe is a typesafe API SDK generator for REST endpoints and exposes hooks 
 [issues-url]: https://github.com/akparhi/queryframe/issues
 [license-shield]: https://img.shields.io/github/license/akparhi/queryframe.svg?style=for-the-badge
 [license-url]: https://github.com/akparhi/queryframe/blob/main/LICENSE
+[ReactQuery]: https://tanstack.com/query/v5
+[Zod]: https://zod.dev/
+[Redaxios]: https://github.com/developit/redaxios
+[Zocker]: https://github.com/LorisSigrist/zocker/

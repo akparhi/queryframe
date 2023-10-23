@@ -98,9 +98,7 @@ export class QueryframeHandler<
 
   /**
    *
-   * If the resolver returns an error, we stop the chain and return it
-   * otherwise we add the result in the mid data of the next resolver
-   * If there is no next handler, we return the last result
+   * @param data: {params, query, body}
    */
   public handle = async (
     data: Omit<Parameters<Refract>[0], 'output'>,
