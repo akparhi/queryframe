@@ -1,7 +1,7 @@
 {
   "name": "@inkheart/queryframe",
   "description": "Typesafe SDK generator for REST APIs",
-  "version": "0.0.9",
+  "version": "0.1.0",
   "private": false,
   "publishConfig": {
     "access": "public",
@@ -25,7 +25,7 @@
   ],
   "scripts": {
     "build": "rm -rf ./dist && tsup",
-    "pub": "npm publish --access public",
+    "pub": "rm -rf ./dist && tsup && npm publish --access public",
     "lint": "eslint .",
     "format": "prettier . --write \"**/*.{mjs,ts,md,json}\"",
     "typecheck": "tsc --noEmit"

@@ -65,21 +65,23 @@ export class QueryframeHandler<
   private handleError = (
     error: QueryframeError,
     data?: Omit<Parameters<Refract>[0], 'output'>,
-  ) =>
-    this.ctx.onError(
-      new QueryframeError({
-        code: error.code,
-        message:
-          error.message +
-          (this.ctx.baseURL
-            ? ` at ${this.ctx.method?.toUpperCase()}::${pathParams(
-                this.ctx.endpoint,
-                data?.params,
-              )}`
-            : ''),
-        cause: error.cause || data,
-      }),
-    )
+  ) => {
+    const err = new QueryframeError({
+      code: error.code,
+      message:
+        error.message +
+        (this.ctx.baseURL
+          ? ` at ${this.ctx.method?.toUpperCase()}::${pathParams(
+              this.ctx.endpoint,
+              data?.params,
+            )}`
+          : ''),
+      cause: error.cause || data,
+    })
+
+    this.ctx.onError(err)
+    throw err
+  }
 
   private log = (
     message: string,

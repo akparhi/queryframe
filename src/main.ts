@@ -46,11 +46,7 @@ class QueryframeBuilder {
 
   public createQuery: CreateHandler = routeParams =>
     new QueryframeHandler({
-      onError:
-        this.ctx.onError ||
-        (err => {
-          throw err
-        }),
+      onError: this.ctx.onError || (() => null),
       log: this.ctx.log || false,
       queryClient: this.queryClient,
       skipStrictParse: this.ctx.skipStrictParse || false,
@@ -77,11 +73,7 @@ class QueryframeBuilder {
 
   public createMutation: CreateHandler = routeParams =>
     new QueryframeHandler({
-      onError:
-        this.ctx.onError ||
-        (err => {
-          throw err
-        }),
+      onError: this.ctx.onError || (() => null),
       log: this.ctx.log || false,
       queryClient: this.queryClient,
       skipStrictParse: this.ctx.skipStrictParse || false,
