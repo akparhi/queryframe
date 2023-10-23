@@ -180,14 +180,13 @@ export class QueryframeHandler<
     input: Omit<Parameters<Refract>[0], 'output'>,
     options?: Pick<
       UseMutationOptions,
+      | 'retry'
+      | 'retryDelay'
+      | 'networkMode'
       | 'onMutate'
       | 'onError'
       | 'onSuccess'
       | 'onSettled'
-      | 'retry'
-      | 'retryDelay'
-      | 'cacheTime'
-      | 'networkMode'
     >,
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.MUTATION)
@@ -231,7 +230,12 @@ export class QueryframeHandler<
     input: Omit<Parameters<Refract>[0], 'output'>,
     option?: Pick<
       UseQueryOptions<TQueryFnData, QueryframeError, ReturnType<SelectFn>>,
-      'networkMode' | 'cacheTime' | 'onError' | 'enabled'
+      | 'enabled'
+      | 'staleTime'
+      | 'retry'
+      | 'retryDelay'
+      | 'networkMode'
+      | 'onError'
     > & {
       select?: (p: TQueryFnData) => SelectFnData
       refetchInterval?: number | false | ((p?: SelectFnData) => number | false)
@@ -264,7 +268,7 @@ export class QueryframeHandler<
     input: Omit<Parameters<Refract>[0], 'output'>,
     options?: Pick<
       UseInfiniteQueryOptions<TQueryFnData, QueryframeError>,
-      'networkMode' | 'enabled' | 'cacheTime'
+      'enabled' | 'staleTime' | 'retry' | 'retryDelay' | 'networkMode'
     >,
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.QUERY)

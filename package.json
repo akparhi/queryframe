@@ -1,6 +1,7 @@
 {
   "name": "@inkheart/queryframe",
-  "version": "0.0.8",
+  "description": "Typesafe SDK generator for REST APIs",
+  "version": "0.0.9",
   "private": false,
   "publishConfig": {
     "access": "public",
