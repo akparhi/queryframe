@@ -1,9 +1,8 @@
 import {
-  useInfiniteQuery,
   useMutation,
   useQuery,
+  type Query,
   type QueryKey,
-  type UseInfiniteQueryOptions,
   type UseMutationOptions,
   type UseQueryOptions,
 } from '@tanstack/react-query'
@@ -182,6 +181,7 @@ export class QueryframeHandler<
       UseMutationOptions,
       | 'retry'
       | 'retryDelay'
+      | 'gcTime'
       | 'networkMode'
       | 'onMutate'
       | 'onError'
@@ -199,7 +199,7 @@ export class QueryframeHandler<
         input,
       )
 
-    return useMutation(() => this.handle(input), options)
+    return useMutation({ mutationFn: () => this.handle(input), ...options })
   }
 
   public invalidate = (input?: Omit<Parameters<Refract>[0], 'output'>) => {
@@ -217,7 +217,7 @@ export class QueryframeHandler<
         input,
       )
 
-    this.ctx.queryClient?.invalidateQueries(this.getKey(input))
+    this.ctx.queryClient?.invalidateQueries({ queryKey: this.getKey(input) })
   }
 
   public useQuery = <
@@ -228,18 +228,21 @@ export class QueryframeHandler<
     SelectFnData = TQueryFnData,
   >(
     input: Omit<Parameters<Refract>[0], 'output'>,
-    option?: Pick<
+    options?: Pick<
       UseQueryOptions<TQueryFnData, QueryframeError, ReturnType<SelectFn>>,
       | 'enabled'
       | 'staleTime'
+      | 'gcTime'
       | 'retry'
       | 'retryDelay'
       | 'networkMode'
-      | 'onError'
+      | 'refetchIntervalInBackground'
     > & {
       select?: (p: TQueryFnData) => SelectFnData
-      refetchInterval?: number | false | ((p?: SelectFnData) => number | false)
-      onSuccess?: (p?: SelectFnData) => void
+      refetchInterval?:
+        | number
+        | false
+        | ((p: Query<TQueryFnData, QueryframeError>) => number | false)
     },
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.QUERY)
@@ -252,46 +255,11 @@ export class QueryframeHandler<
         input,
       )
 
-    return useQuery<TQueryFnData, QueryframeError, SelectFnData>(
-      this.getKey(input),
-      ({ queryKey }) =>
+    return useQuery<TQueryFnData, QueryframeError, SelectFnData>({
+      queryKey: this.getKey(input),
+      queryFn: ({ queryKey }) =>
         this.handle(queryKey?.[1] as Omit<Parameters<Refract>[0], 'output'>),
-      option,
-    )
-  }
-
-  public useInfiniteQuery = <
-    TQueryFnData extends InferDataParser<Output> extends never
-      ? ReturnType<Refract>
-      : InferDataParser<Output>,
-  >(
-    input: Omit<Parameters<Refract>[0], 'output'>,
-    options?: Pick<
-      UseInfiniteQueryOptions<TQueryFnData, QueryframeError>,
-      'enabled' | 'staleTime' | 'retry' | 'retryDelay' | 'networkMode'
-    >,
-  ) => {
-    if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.QUERY)
-      this.throwFormattedError(
-        new QueryframeError({
-          code: QUERYFRAME_ERROR.BAD_INPUT,
-          message:
-            'useQuery is only available for queries with inbuilt fetcher',
-        }),
-        input,
-      )
-
-    return useInfiniteQuery<TQueryFnData, QueryframeError>(
-      this.getKey(input),
-      ({ queryKey, pageParam = 1 }: { queryKey: any; pageParam?: number }) =>
-        this.handle({
-          ...queryKey?.[1],
-          query: {
-            ...queryKey?.[1]?.query,
-            page: pageParam,
-          },
-        } as Omit<Parameters<Refract>[0], 'output'>),
-      options,
-    )
+      ...options,
+    })
   }
 }
