@@ -34,7 +34,7 @@ type QueryframeBuilderParams = {
 
 class QueryframeBuilder {
   public ctx: QueryframeBuilderParams
-  public queryClient?: QueryClient
+  public queryClient: QueryClient
 
   constructor(public config: QueryframeBuilderParams) {
     this.ctx = config
