@@ -12,6 +12,17 @@ import { z } from 'zod'
 import { QueryframeHandler, type CreateHandler } from './core'
 import { HttpMethods, MethodTypes, type Header } from './utils'
 
+//  Queryframe routes & Queryframe initiator
+export type QueryframeRoutes<T extends QueryframeRoutes = object> = {
+  [key: string]: T | QueryframeHandler | any
+}
+
+class Queryframe<Routes extends QueryframeRoutes> {
+  constructor(public queryframe: Routes) {}
+}
+
+//  Exposed class
+//  Query builder
 type QueryframeBuilderParams = {
   log?: boolean
   baseURL?: string
@@ -82,23 +93,14 @@ class QueryframeBuilder {
       querySchema: routeParams.query,
       bodySchema: routeParams.body,
     })
+
+  public createQueryframe = <Routes extends QueryframeRoutes>(
+    routes: Routes,
+  ): Queryframe<Routes> => new Queryframe(routes)
 }
 
 export const createQueryframeBuilder = (config: QueryframeBuilderParams) =>
   new QueryframeBuilder(config)
-
-//  Queryframe routes & Queryframe initiator
-export type QueryframeRoutes<T extends QueryframeRoutes = object> = {
-  [key: string]: T | QueryframeHandler | any
-}
-
-class Queryframe<Routes extends QueryframeRoutes> {
-  constructor(public queryframe: Routes) {}
-}
-
-export const createQueryframe = <Routes extends QueryframeRoutes>(
-  routes: Routes,
-): Queryframe<Routes> => new Queryframe(routes)
 
 export {
   QueryClientProvider,
