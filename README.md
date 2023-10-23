@@ -7,7 +7,7 @@
 
 ## Documentation
 
-> This library is highly opinionated.
+> This library implements a highly opinionated way of fetching and managing API data.
 
 Queryframe is a typesafe API SDK generator for REST endpoints and exposes hooks from the amazing @tanstack/react-query.
 
@@ -22,14 +22,10 @@ Queryframe uses a number of open source projects under the hood:
 
 ## Installation
 
-Queryframe requires [Node.js](https://nodejs.org/) v18+ to run.
-
-Install the dependencies and devDependencies and start the server.
+Install the dependencies and follow the guide below.
 
 ```sh
-cd dillinger
-npm i
-node app
+pnpm add @inkheart/queryframe
 ```
 
 ## Example Usage
