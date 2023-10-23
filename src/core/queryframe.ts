@@ -62,7 +62,7 @@ export class QueryframeHandler<
     this.handler = firstHandler
   }
 
-  private throwFormattedError = (
+  private handleError = (
     error: QueryframeError,
     data?: Omit<Parameters<Refract>[0], 'output'>,
   ) => {
@@ -111,7 +111,7 @@ export class QueryframeHandler<
     if (!this.ctx.skipStrictParse) {
       //  Runs validations before resolve
       res = await this.handler.handle(data)
-      if (res instanceof QueryframeError) this.throwFormattedError(res, data)
+      if (res instanceof QueryframeError) this.handleError(res, data)
     }
 
     if (
@@ -137,7 +137,7 @@ export class QueryframeHandler<
           res = await this.ctx.refract({ ...data, output: res })
         } catch (error: any) {
           const { status }: { status: keyof typeof NETWORK_ERROR } = error
-          this.throwFormattedError(
+          this.handleError(
             new QueryframeError({
               code: NETWORK_ERROR[status] || QUERYFRAME_ERROR.API_ERROR,
               message: error?.message || 'axios error',
@@ -153,7 +153,7 @@ export class QueryframeHandler<
         res = await new DataValidator(this.ctx.outputSchema).validate(res)
     }
 
-    if (res instanceof QueryframeError) this.throwFormattedError(res, data)
+    if (res instanceof QueryframeError) this.handleError(res, data)
 
     if (this.ctx.log)
       this.log(
@@ -190,7 +190,7 @@ export class QueryframeHandler<
     >,
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.MUTATION)
-      this.throwFormattedError(
+      this.handleError(
         new QueryframeError({
           code: QUERYFRAME_ERROR.BAD_INPUT,
           message:
@@ -208,7 +208,7 @@ export class QueryframeHandler<
       this.ctx.type !== MethodTypes.MUTATION ||
       !this.ctx.queryClient
     )
-      this.throwFormattedError(
+      this.handleError(
         new QueryframeError({
           code: QUERYFRAME_ERROR.BAD_INPUT,
           message:
@@ -246,7 +246,7 @@ export class QueryframeHandler<
     },
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.QUERY)
-      this.throwFormattedError(
+      this.handleError(
         new QueryframeError({
           code: QUERYFRAME_ERROR.BAD_INPUT,
           message:
