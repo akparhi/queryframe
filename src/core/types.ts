@@ -54,6 +54,7 @@ export type CreateHandler = <
 ) => QueryframeHandler<Refract, Output>
 
 export type PartialHandlerParams = {
+  log?: boolean
   queryClient?: QueryClient
   skipStrictParse?: boolean
   type: MethodTypes

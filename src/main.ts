@@ -13,23 +13,27 @@ import { QueryframeHandler, type CreateHandler } from './core'
 import { HttpMethods, MethodTypes, type Header } from './utils'
 
 type QueryframeBuilderParams = {
+  log?: boolean
   baseURL?: string
   headers?: Header
   skipStrictParse?: boolean
+  queryClient?: QueryClient
   queryClientConfig?: QueryClientConfig
 }
 
 class QueryframeBuilder {
   public ctx: QueryframeBuilderParams
-  public queryClient: QueryClient
+  public queryClient?: QueryClient
 
   constructor(public config: QueryframeBuilderParams) {
     this.ctx = config
-    this.queryClient = new QueryClient(config.queryClientConfig || {})
+    this.queryClient =
+      config.queryClient || new QueryClient(config.queryClientConfig)
   }
 
   public createQuery: CreateHandler = routeParams =>
     new QueryframeHandler({
+      log: this.ctx.log || false,
       queryClient: this.queryClient,
       skipStrictParse: this.ctx.skipStrictParse || false,
       type: MethodTypes.QUERY,
@@ -55,6 +59,7 @@ class QueryframeBuilder {
 
   public createMutation: CreateHandler = routeParams =>
     new QueryframeHandler({
+      log: this.ctx.log || false,
       queryClient: this.queryClient,
       skipStrictParse: this.ctx.skipStrictParse || false,
       type: MethodTypes.MUTATION,

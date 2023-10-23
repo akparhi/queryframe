@@ -12,12 +12,7 @@ import { ZodType } from 'zod'
 import { createMock } from 'zodock'
 import { NETWORK_ERROR, QUERYFRAME_ERROR, QueryframeError } from '../error'
 import { MethodTypes, pathParams, sleep } from '../utils'
-import {
-  AbstractHandler,
-  FirstHandler,
-  type Handler,
-  type HandlerParams,
-} from './handler'
+import { AbstractHandler, FirstHandler, type Handler } from './handler'
 import { type PartialHandlerParams } from './types'
 import {
   DataValidator,
@@ -70,7 +65,7 @@ export class QueryframeHandler<
 
   private throwFormattedError = (
     error: QueryframeError,
-    data?: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
+    data?: Omit<Parameters<Refract>[0], 'output'>,
   ) => {
     throw new QueryframeError({
       code: error.code,
@@ -88,7 +83,7 @@ export class QueryframeHandler<
 
   private log = (
     message: string,
-    data?: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
+    data?: Omit<Parameters<Refract>[0], 'output'>,
   ) => {
     // eslint-disable-next-line no-console
     console.info(
@@ -106,12 +101,13 @@ export class QueryframeHandler<
    * If there is no next handler, we return the last result
    */
   public handle = async (
-    data: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
+    data: Omit<Parameters<Refract>[0], 'output'>,
   ): Promise<
     InferDataParser<Output> extends never
       ? ReturnType<Refract>
       : InferDataParser<Output>
   > => {
+    const t1 = performance.now()
     let res
     if (!this.ctx.skipStrictParse) {
       //  Runs validations before resolve
@@ -124,10 +120,8 @@ export class QueryframeHandler<
       this.ctx.outputSchema &&
       this.ctx.outputSchema instanceof ZodType
     ) {
-      const mockTime = Math.floor(Math.random() * (200 - 40 + 1) + 40)
-      await sleep(mockTime)
+      await sleep(Math.floor(Math.random() * (200 - 40 + 1) + 40))
       res = createMock(this.ctx.outputSchema)
-      this.log(`Generated mock data in: ${mockTime}ms`)
     } else {
       //  Begin resolution
       if (this.ctx.baseURL) {
@@ -141,7 +135,6 @@ export class QueryframeHandler<
             data: data.body,
           })
           res = this.ctx.transformResponse(result)
-
           res = await this.ctx.refract({ ...data, output: res })
         } catch (error: any) {
           const { status }: { status: keyof typeof NETWORK_ERROR } = error
@@ -163,18 +156,28 @@ export class QueryframeHandler<
 
     if (res instanceof QueryframeError) this.throwFormattedError(res, data)
 
+    if (this.ctx.log)
+      this.log(
+        `${
+          this.ctx.baseURL
+            ? this.ctx.mock &&
+              this.ctx.outputSchema &&
+              this.ctx.outputSchema instanceof ZodType
+              ? 'mocked'
+              : 'fetched'
+            : 'resolved'
+        } in: ${Math.floor(performance.now() - t1)}ms`,
+      )
     return res
   }
 
-  public getKey = (
-    input?: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
-  ) => {
+  public getKey = (input?: Omit<Parameters<Refract>[0], 'output'>) => {
     const stringKey = '' + this.ctx.baseURL + +'' + this.ctx.endpoint
     return (input ? [stringKey, input] : [stringKey]) as QueryKey
   }
 
   public useMutation = (
-    input: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
+    input: Omit<Parameters<Refract>[0], 'output'>,
     options?: Pick<
       UseMutationOptions,
       | 'onMutate'
@@ -200,9 +203,7 @@ export class QueryframeHandler<
     return useMutation(() => this.handle(input), options)
   }
 
-  public invalidate = (
-    input?: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
-  ) => {
+  public invalidate = (input?: Omit<Parameters<Refract>[0], 'output'>) => {
     if (
       !this.ctx.baseURL ||
       this.ctx.type !== MethodTypes.MUTATION ||
@@ -227,7 +228,7 @@ export class QueryframeHandler<
     SelectFn extends (p: TQueryFnData) => SelectFnData,
     SelectFnData = TQueryFnData,
   >(
-    input: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
+    input: Omit<Parameters<Refract>[0], 'output'>,
     option?: Pick<
       UseQueryOptions<TQueryFnData, QueryframeError, ReturnType<SelectFn>>,
       'networkMode' | 'cacheTime' | 'onError' | 'enabled'
@@ -250,10 +251,7 @@ export class QueryframeHandler<
     return useQuery<TQueryFnData, QueryframeError, SelectFnData>(
       this.getKey(input),
       ({ queryKey }) =>
-        this.handle(
-          queryKey?.[1] as HandlerParams &
-            Omit<Parameters<Refract>[0], 'output'>,
-        ),
+        this.handle(queryKey?.[1] as Omit<Parameters<Refract>[0], 'output'>),
       option,
     )
   }
@@ -263,7 +261,7 @@ export class QueryframeHandler<
       ? ReturnType<Refract>
       : InferDataParser<Output>,
   >(
-    input: HandlerParams & Omit<Parameters<Refract>[0], 'output'>,
+    input: Omit<Parameters<Refract>[0], 'output'>,
     options?: Pick<
       UseInfiniteQueryOptions<TQueryFnData, QueryframeError>,
       'networkMode' | 'enabled' | 'cacheTime'
@@ -288,7 +286,7 @@ export class QueryframeHandler<
             ...queryKey?.[1]?.query,
             page: pageParam,
           },
-        } as HandlerParams & Omit<Parameters<Refract>[0], 'output'>),
+        } as Omit<Parameters<Refract>[0], 'output'>),
       options,
     )
   }
