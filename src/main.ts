@@ -10,6 +10,7 @@ import {
 import redaxios from 'redaxios'
 import { z } from 'zod'
 import { QueryframeHandler, type CreateHandler } from './core'
+import { type ErrorHandler } from './error'
 import { HttpMethods, MethodTypes, type Header } from './utils'
 
 //  Queryframe routes & Queryframe initiator
@@ -24,6 +25,7 @@ class Queryframe<Routes extends QueryframeRoutes> {
 //  Exposed class
 //  Query builder
 type QueryframeBuilderParams = {
+  onError?: ErrorHandler
   log?: boolean
   baseURL?: string
   headers?: Header
@@ -44,6 +46,11 @@ class QueryframeBuilder {
 
   public createQuery: CreateHandler = routeParams =>
     new QueryframeHandler({
+      onError:
+        this.ctx.onError ||
+        (err => {
+          throw err
+        }),
       log: this.ctx.log || false,
       queryClient: this.queryClient,
       skipStrictParse: this.ctx.skipStrictParse || false,
@@ -70,6 +77,11 @@ class QueryframeBuilder {
 
   public createMutation: CreateHandler = routeParams =>
     new QueryframeHandler({
+      onError:
+        this.ctx.onError ||
+        (err => {
+          throw err
+        }),
       log: this.ctx.log || false,
       queryClient: this.queryClient,
       skipStrictParse: this.ctx.skipStrictParse || false,

@@ -49,3 +49,5 @@ export class QueryframeError extends Error {
     this.name = 'QueryframeError'
   }
 }
+
+export type ErrorHandler = (error: QueryframeError) => void

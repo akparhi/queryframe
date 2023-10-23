@@ -1,4 +1,5 @@
 import { type QueryClient } from '@tanstack/react-query'
+import { type ErrorHandler } from '../error'
 import {
   type AnyObject,
   type ExcludeNeverKeysObj,
@@ -54,6 +55,7 @@ export type CreateHandler = <
 ) => QueryframeHandler<Refract, Output>
 
 export type PartialHandlerParams = {
+  onError: ErrorHandler
   log?: boolean
   queryClient?: QueryClient
   skipStrictParse?: boolean
