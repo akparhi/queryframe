@@ -87,7 +87,7 @@ try {
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
 
-[npm-shield]: https://img.shields.io/npm/@inkheart/queryframe?style=for-the-badge
+[npm-shield]: https://img.shields.io/npm/v/@inkheart/queryframe?style=for-the-badge
 [npm-url]: https://www.npmjs.com/package/@inkheart/queryframe
 [contributors-shield]: https://img.shields.io/github/contributors/akparhi/queryframe.svg?style=for-the-badge
 [contributors-url]: https://github.com/akparhi/queryframe/graphs/contributors
