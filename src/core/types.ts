@@ -1,10 +1,10 @@
 import { type QueryClient } from '@tanstack/react-query'
 import {
+  type AnyObject,
   type ExcludeNeverKeysObj,
   type Header,
   type HttpMethods,
   type MethodTypes,
-  type Prettify,
 } from '../utils'
 import { type QueryframeHandler } from './queryframe'
 import { type DataParser, type InferDataParser } from './validator'
@@ -29,22 +29,20 @@ export interface QueryframeParams<
 
 export type CreateHandler = <
   Refract extends (
-    p: Prettify<
-      ExcludeNeverKeysObj<{
-        params: InferDataParser<Params> extends never
-          ? object
-          : InferDataParser<Params>
-        query: InferDataParser<Query> extends never
-          ? object
-          : InferDataParser<Query>
-        body: InferDataParser<Body> extends never
-          ? object
-          : InferDataParser<Body>
-        output: InferDataParser<Output> extends never
-          ? object
-          : InferDataParser<Output>
-      }>
-    >,
+    p: ExcludeNeverKeysObj<{
+      params: InferDataParser<Params> extends never
+        ? undefined
+        : InferDataParser<Params>
+      query: InferDataParser<Query> extends never
+        ? undefined
+        : InferDataParser<Query>
+      body: InferDataParser<Body> extends never
+        ? undefined
+        : InferDataParser<Body>
+      output: InferDataParser<Output> extends never
+        ? AnyObject
+        : InferDataParser<Output>
+    }>,
   ) => InferDataParser<Output> extends never ? Res : InferDataParser<Output>,
   Res,
   Params extends DataParser<Record<string, any>> = never,
