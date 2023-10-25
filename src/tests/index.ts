@@ -1,5 +1,5 @@
 import * as z from 'zod'
-import { createQueryframe, createQueryframeBuilder } from '../'
+import { createQueryframeBuilder } from '../'
 
 const coreApiSchema = z.object({
   status: z.boolean(),
@@ -43,7 +43,7 @@ const getExpenseCategories = builder.createQuery({
 })
 
 //
-const { queryframe } = createQueryframe({
+const { queryframe } = builder.createQueryframe({
   hello: helloEndpoint,
   update: updateMe,
   getExpenseCategories,
@@ -60,6 +60,7 @@ export const init = async () => {
       //     name: 'hu',
       //   },
       // })
+
       const { data } = await queryframe.getExpenseCategories.useQuery(
         {
           query: {

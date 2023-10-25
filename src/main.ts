@@ -114,4 +114,5 @@ export {
   useQueryClient,
   z,
   redaxios,
+  HttpMethods,
 }
