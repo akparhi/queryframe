@@ -15,10 +15,10 @@ Queryframe is a typesafe API SDK generator for REST endpoints and exposes hooks 
 
 Queryframe uses a number of open source projects under the hood:
 
-- [ReactQuery] - React Query v5
-- [Zod] - Zod
-- [Zocker] - zocker, 2kb library to generate mock data
-- [Redaxios] - redaxios, minimal fetch wrapper with axios interface
+- [ReactQuery] - v5!
+- [Zod] - for schemas
+- [Zocker] - 2kb library to generate mock data
+- [Redaxios] - minimal fetch wrapper with axios interface
 
 ## Installation
 
