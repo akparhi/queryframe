@@ -176,19 +176,21 @@ export class QueryframeHandler<
     return (input ? [stringKey, input] : [stringKey]) as QueryKey
   }
 
-  public useMutation = (
+  public useMutation = <
+    TMutationFnData extends InferDataParser<Output> extends never
+      ? ReturnType<Refract>
+      : InferDataParser<Output>,
+  >(
     input: Omit<Parameters<Refract>[0], 'output'>,
     options?: Pick<
       UseMutationOptions,
-      | 'retry'
-      | 'retryDelay'
-      | 'gcTime'
-      | 'networkMode'
-      | 'onMutate'
-      | 'onError'
-      | 'onSuccess'
-      | 'onSettled'
-    >,
+      'retry' | 'retryDelay' | 'gcTime' | 'networkMode'
+    > & {
+      onMutate?: () => Promise<unknown> | unknown
+      onSuccess?: (p: TMutationFnData) => Promise<unknown> | unknown
+      onError?: (p: QueryframeError) => Promise<unknown> | unknown
+      onSettled?: (p?: TMutationFnData, error?: QueryframeError | null) => void
+    },
   ) => {
     if (!this.ctx.baseURL || this.ctx.type !== MethodTypes.MUTATION)
       this.handleError(
@@ -200,7 +202,10 @@ export class QueryframeHandler<
         input,
       )
 
-    return useMutation({ mutationFn: () => this.handle(input), ...options })
+    return useMutation<TMutationFnData, QueryframeError>({
+      mutationFn: () => this.handle(input),
+      ...options,
+    })
   }
 
   public invalidate = (input?: Omit<Parameters<Refract>[0], 'output'>) => {
